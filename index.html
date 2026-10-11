@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16191b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TTRC Admin">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>TTRC Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: phone-first single column, bottom tab bar, bottom sheets for every decision. Desktop shows a centered phone-width column. */
+:root{
+  --bg:#f1f2f0; --panel:#fff; --ink:#15181a; --muted:#5d666b; --line:#dde0dc; --bar:#16191b; --bar-ink:#aab1b4;
+  --accent:#9a6b33; --accent-ink:#fff; --accent-soft:#f1e7d9;
+  --good:#1d7a45; --good-soft:#dff1e6; --warn:#a2610a; --warn-soft:#fbecd2; --bad:#b3261e; --bad-soft:#f9dedb; --info:#2b5f8a; --info-soft:#dce8f3;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1011; --panel:#181b1d; --ink:#eceeed; --muted:#9aa3a8; --line:#2a2f33; --bar:#0a0c0d; --bar-ink:#8c9599;
+  --accent:#d19a55; --accent-ink:#15110b; --accent-soft:#2c241a; --good:#58c487; --good-soft:#15291f; --warn:#e5a949; --warn-soft:#2b2312; --bad:#ef7d74; --bad-soft:#2f1816; --info:#7db4e3; --info-soft:#162331; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1011; --panel:#181b1d; --ink:#eceeed; --muted:#9aa3a8; --line:#2a2f33; --bar:#0a0c0d; --bar-ink:#8c9599;
+  --accent:#d19a55; --accent-ink:#15110b; --accent-soft:#2c241a; --good:#58c487; --good-soft:#15291f; --warn:#e5a949; --warn-soft:#2b2312; --bad:#ef7d74; --bad-soft:#2f1816; --info:#7db4e3; --info-soft:#162331; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 var(--body);margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--display);margin:0;font-weight:700;text-wrap:balance}
+h1{font-size:30px;line-height:1.05}h2{font-size:22px}
+.phone{max-width:480px;height:100%;margin:0 auto;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+.scroll{flex:1;overflow:auto;padding:16px 16px 28px;display:flex;flex-direction:column;gap:16px}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar b{font:700 18px var(--display);letter-spacing:.05em;flex:1;white-space:nowrap}
+.mock{white-space:nowrap}
+.mock{font:500 11px var(--mono);background:var(--info-soft);color:var(--info);padding:4px 8px;border-radius:6px}
+.tabbar{display:flex;background:var(--bar);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+.tab{flex:1;background:none;border:0;color:var(--bar-ink);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:12px;font-weight:600;position:relative;min-height:52px;border-radius:10px}
+.tab svg{width:24px;height:24px}
+.tab[aria-current="page"]{color:#fff;background:rgba(255,255,255,.1)}
+.tab[aria-current="page"] svg{color:var(--accent)}
+.dot{position:absolute;top:2px;right:calc(50% - 22px);background:var(--bad);color:#fff;font:700 11px var(--mono);border-radius:99px;padding:0 6px;min-width:18px;text-align:center}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.sec{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px}
+.sec h3{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.item{display:flex;gap:12px;align-items:center;padding:14px;width:100%;background:none;border:0;border-top:1px solid var(--line);text-align:left;min-height:64px}
+.card>.item:first-child,.card>div:first-child>.item:first-child{border-top:0}
+.item .t{flex:1;min-width:0}.item .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{color:var(--muted);font-size:14px}
+.pill{display:inline-block;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.good{background:var(--good-soft);color:var(--good)}.warn{background:var(--warn-soft);color:var(--warn)}.bad{background:var(--bad-soft);color:var(--bad)}.info{background:var(--info-soft);color:var(--info)}.neutral{background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.chev{color:var(--muted);flex:none}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:700 16px var(--display);flex:none}
+.btn{min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-weight:600;padding:0 16px;flex:1}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{min-height:40px;font-size:14px;flex:none}
+.btn[disabled]{opacity:.45}
+.row2{display:flex;gap:10px}.wrap{flex-wrap:wrap}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:8px 14px;font-weight:600;font-size:14px;white-space:nowrap;min-height:40px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.sel[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+.stats div{background:var(--panel);padding:10px 12px}.stats b{display:block;font:700 24px var(--display)}.stats span{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;display:flex}.bar i{height:100%;display:block}
+.search{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.search input{flex:1;border:0;background:none;color:var(--ink);font:inherit;padding:13px 0;outline:none;min-width:0}
+input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel);color:var(--ink);width:100%}
+label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{flex-direction:row;align-items:center;gap:8px;font-weight:500;border:1px solid var(--line);border-radius:10px;padding:10px}.checks input{width:auto}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:10}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;background:var(--panel);border-radius:20px 20px 0 0;z-index:11;display:flex;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.3)}
+.sheet.full{top:0;max-height:100%;border-radius:0}
+.sheet header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet header h2{flex:1;font-size:20px}
+.sheet .body{overflow:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.sheet footer{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
+.grab{width:40px;height:4px;background:var(--line);border-radius:9px;margin:8px auto 0}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;margin:0}.kv dt{color:var(--muted);font-size:14px}.kv dd{margin:0;overflow-wrap:anywhere}
+.note{padding:12px 14px;border-radius:12px;font-size:14px}
+.note.info{background:var(--info-soft);color:var(--info)}.note.warn{background:var(--warn-soft);color:var(--warn)}.note.good{background:var(--good-soft);color:var(--good)}
+.steps{display:flex;gap:6px}.steps i{flex:1;height:6px;border-radius:9px;background:var(--line)}.steps i.on{background:var(--good)}
+.toast{position:absolute;left:16px;right:16px;bottom:84px;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;z-index:30;font-weight:600;text-align:center}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden}.seg button{border:0;background:var(--panel);min-height:48px;font-weight:600}.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.pa button[aria-pressed="true"].g{background:var(--good);color:#fff}.seg.pa button[aria-pressed="true"].r{background:var(--bad);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (min-width:520px){.phone{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(40px);opacity:.5}}}
+
+/* app shell tweaks */
+.phone{height:100dvh}
+.topbar{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.tabbar{touch-action:manipulation}
+html{overscroll-behavior:none}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="topbar"><b>TTRC ADMIN</b><span class="mock">DEMO DATA</span><button class="btn sm" id="theme" style="min-height:36px">Theme</button></div>
+  <div class="scroll" id="main"></div>
+  <nav class="tabbar" id="tabs" aria-label="Main"></nav>
+  <div id="layer"></div>
+</div>
+
+<script>
+// Sample people and numbers are invented. Rules mirror the current admin: approval emails payment instructions,
+// approval never marks paid, course details email automatically once fully paid with a current waiver.
+const IC={today:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',classes:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',people:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-4 3-6 7-6s7 2 7 6M17 5a3.5 3.5 0 0 1 0 7M22 20c0-3-2-5-4-5.6"/>',inbox:'<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
+const state={tab:'today',cf:'all',pf:'all',pq:'',cls:null,ctab:'roster',itab:'inq',theme:null};
+const P=[
+ {id:1,n:'Daniel Katz',e:'dkatz@example.com',ph:'201-555-0134',course:'NJ CCW Course',date:'Sun, Oct 18',price:275,paid:0,rep:null,waiver:'Missing',wsent:null,selfie:true,ret:false,st:'submitted',remind:{}},
+ {id:2,n:'Maya Brenner',e:'maya.b@example.com',ph:'917-555-0188',course:'Low Light',date:'Sun, Oct 18',price:200,paid:0,rep:null,waiver:'Current',wsent:null,selfie:true,ret:true,st:'submitted',remind:{}},
+ {id:3,n:'Ari Feldman',e:'ari.f@example.com',ph:'732-555-0150',course:'Stress Box',date:'Sun, Nov 22',price:225,paid:0,rep:{m:'Zelle',a:225,when:'Oct 8, 3:03 PM'},waiver:'Current',wsent:null,selfie:true,ret:true,st:'approved',remind:{}},
+ {id:4,n:'Rina Shapiro',e:'rina.s@example.com',ph:'646-555-0121',course:'Low Light',date:'Sun, Oct 18',price:200,paid:100,rep:null,waiver:'Missing',wsent:'Oct 6',selfie:true,ret:false,st:'approved',remind:{pay:'Oct 7',waiver:'Oct 7'}},
+ {id:5,n:'Josh Weiss',e:'jweiss@example.com',ph:'973-555-0166',course:'NJ CCW Course',date:'Sun, Oct 18',price:275,paid:275,rep:null,waiver:'Current',wsent:null,selfie:true,ret:false,st:'confirmed',remind:{}}];
+const INQ=[{id:1,n:'Eli Mandel',kind:'Private lesson',msg:'Looking for pistol skills, two sessions, weekday evenings.',when:'Oct 8, 5:29 PM',done:false},{id:2,n:'Sara Lieb',kind:'General',msg:'Do you run classes for first-time shooters in NY?',when:'Oct 8, 11:02 AM',done:false},{id:3,n:'Moshe Rubin',kind:'Training inquiry',msg:'Synagogue security assessment, 150 members.',when:'Oct 7, 8:40 PM',done:false}];
+const SENT=[['maya.b@example.com','Registration approved','Oct 8, 10:20 PM','Delivered'],['jweiss@example.com','Payment confirmed','Oct 8, 10:35 PM','Delivered'],['rina.s@example.com','Waiver reminder','Oct 7, 12:27 AM','Delivered'],['rina.s@example.com','Payment reminder','Oct 7, 12:26 AM','Delivered']];
+const CLASSES=[{id:1,n:'Low Light',date:'Sun, Oct 18 · 6:00 PM',where:'Henryville, PA',cap:8},{id:2,n:'NJ CCW Course',date:'Sun, Oct 18 · 10:00 AM',where:'New Jersey',cap:12},{id:3,n:'Stress Box',date:'Sun, Nov 22 · 10:00 AM',where:'Henryville, PA',cap:8}];
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ini=n=>n.split(' ').map(x=>x[0]).slice(0,2).join('');
+const due=p=>p.price-p.paid, $$=n=>'$'+n;
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('.phone').appendChild(t);setTimeout(()=>t.remove(),2600)}
+function counts(){return{appr:P.filter(p=>p.st==='submitted').length,verify:P.filter(p=>p.rep).length,wv:P.filter(p=>p.waiver==='Missing'&&p.st!=='submitted').length,bal:P.filter(p=>due(p)>0&&p.st!=='submitted'&&!p.rep).length,inq:INQ.filter(i=>!i.done).length}}
+function badge(){const c=counts();return{today:c.appr+c.verify+c.wv+c.bal,inbox:c.inq}}
+function nav(){const b=badge(),L=[['today','Today'],['classes','Classes'],['people','People'],['inbox','Inbox'],['more','More']];
+  $('#tabs').innerHTML=L.map(([k,l])=>`<button class="tab" data-tab="${k}" ${state.tab===k?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">${IC[k]}</svg>${l}${b[k]?`<span class="dot">${b[k]}</span>`:''}</button>`).join('')}
+const pills=p=>`<span class="pill ${p.waiver==='Current'?'good':'warn'}">Waiver ${p.waiver.toLowerCase()}</span> <span class="pill ${due(p)===0?'good':p.rep?'info':p.paid?'warn':'bad'}">${due(p)===0?'Paid':p.rep?'Verify '+$$(p.rep.a):p.paid?$$(due(p))+' left':'Unpaid'}</span>`;
+function row(p,sub){return `<button class="item" data-p="${p.id}"><span class="avatar">${ini(p.n)}</span><span class="t"><b>${esc(p.n)}</b><span class="sub">${esc(sub||p.course+' · '+p.date)}</span><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${pills(p)}</div></span><span class="chev">›</span></button>`}
+
+function vToday(){
+  const c=counts(), A=P.filter(p=>p.st==='submitted'), V=P.filter(p=>p.rep), W=P.filter(p=>p.waiver==='Missing'&&p.st!=='submitted'), B=P.filter(p=>due(p)>0&&p.st!=='submitted'&&!p.rep);
+  const nothing=!A.length&&!V.length&&!W.length&&!B.length;
+  const sec=(t,n,l,fn)=>l.length?`<div><div class="sec"><h3>${t}</h3><span class="sub">${n}</span></div><div class="card" style="margin-top:8px">${l.map(fn).join('')}</div></div>`:'';
+  return `<div><h1>Today</h1><div class="sub">Oct 9 · ${nothing?'All caught up':'Tap a person to act'}</div></div>`+
+  (nothing?'<div class="note good">Nothing needs you right now.</div>':'')+
+  sec('Approve','New registrations',A,p=>row(p,p.course+' · '+p.date))+
+  sec('Verify payment','Reported, not yet confirmed',V,p=>row(p,`${$$(p.rep.a)} via ${p.rep.m} · ${p.rep.when}`))+
+  sec('Waivers','Not signed yet',W,p=>row(p,p.course+' · '+(p.remind.waiver?'Reminded '+p.remind.waiver:'Never reminded')))+
+  sec('Balances','Money still owed',B,p=>row(p,`${$$(due(p))} due · ${p.remind.pay?'Reminded '+p.remind.pay:'Never reminded'}`))+
+  (c.inq?`<button class="card item" data-tab="inbox"><span class="avatar" style="background:var(--info-soft);color:var(--info)">✉</span><span class="t"><b>${c.inq} inquiries need a reply</b><span class="sub">Newest from ${esc(INQ.find(i=>!i.done).n)}</span></span><span class="chev">›</span></button>`:'')+
+  `<div><div class="sec"><h3>Next class</h3></div><div class="card" style="margin-top:8px"><button class="item" data-cls="1"><span class="t"><b>Low Light · Sun, Oct 18</b><span class="sub">6:00 PM · Henryville, PA</span></span><span class="chev">›</span></button><div class="stats"><div><b>${P.filter(p=>p.course==='Low Light').length}</b><span>registered</span></div><div><b>1</b><span>ready</span></div><div><b>1</b><span>need action</span></div></div></div></div>`}
+
+function vClasses(){
+  if(state.cls){const c=CLASSES.find(x=>x.id===state.cls),R=P.filter(p=>p.course===c.n);const t=state.ctab;
+    let body='';
+    if(t==='roster')body=`<div class="card">${R.map(p=>row(p,p.e)).join('')||'<div class="item sub">No registrations yet.</div>'}</div>`;
+    if(t==='checkin')body=`<div class="card">${R.map(p=>`<div class="item" style="display:block"><b>${esc(p.n)}</b><div class="seg pa" style="margin-top:10px"><button class="g" data-att="${p.id}:p" aria-pressed="${p.att==='p'}">Present</button><button class="r" data-att="${p.id}:n" aria-pressed="${p.att==='n'}">No-show</button></div><label style="flex-direction:row;align-items:center;margin-top:10px;font-weight:500"><input type="checkbox" style="width:auto" data-done="${p.id}" ${p.done?'checked':''}> Completed the course</label></div>`).join('')}</div><div class="note info">Present unlocks once class starts.</div>`;
+    if(t==='certs'){const ok=R.filter(p=>p.done).length;body=`<div class="card" style="padding:16px;display:flex;flex-direction:column;gap:14px"><div><b>1 · Who qualifies</b><div class="sub">${ok} of ${R.length} completed</div></div><div><b>2 · Generate PDFs</b><div class="sub">Template ttrc-completion-v1</div><button class="btn sm" style="margin-top:8px" data-genc>Generate</button> ${state.gen?'<span class="pill good">Done</span>':''}</div><div><b>3 · Email certificates</b><div class="sub">A separate step. NJ CCW paperwork stays manual.</div><button class="btn pri sm" style="margin-top:8px" data-sendc ${state.gen?'':'disabled'}>Email certificates</button> ${state.sentc?'<span class="pill good">Sent</span>':''}</div></div>`}
+    if(t==='mail')body=`<div class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px"><button class="btn" data-mock="Whole-class email preview">Preview whole-class email</button><button class="btn" data-bulkwv="${c.id}">Remind everyone missing a waiver</button><button class="btn" data-mock="Roster PDF">Download roster PDF</button></div>`;
+    return `<div><button class="btn sm" data-clsback>‹ Classes</button></div><div><h1>${c.n}</h1><div class="sub">${c.date} · ${c.where}</div></div><div class="card"><div class="stats"><div><b>${R.length}/${c.cap}</b><span>registered</span></div><div><b>${R.filter(p=>due(p)===0).length}</b><span>paid</span></div><div><b>${R.filter(p=>p.waiver==='Missing').length}</b><span>no waiver</span></div></div></div><div class="chips">${[['roster','Roster'],['checkin','Check-in'],['certs','Certificates'],['mail','Emails']].map(([k,l])=>`<button class="chip sel" data-ctab="${k}" aria-pressed="${t===k}">${l}</button>`).join('')}</div>`+body}
+  return `<h1>Classes</h1><div class="card">${CLASSES.map(c=>`<button class="item" data-cls="${c.id}"><span class="t"><b>${c.n}</b><span class="sub">${c.date} · ${c.where}</span></span><span class="pill neutral">${P.filter(p=>p.course===c.n).length}/${c.cap}</span><span class="chev">›</span></button>`).join('')}</div><button class="btn" data-sheetclass>+ Add class date</button><div class="note info">Publishing a class never emails subscribers. That is a separate step.</div>`}
+
+function vPeople(){const L=P.filter(p=>(state.pf==='all'||(state.pf==='bal'&&due(p)>0)||(state.pf==='wv'&&p.waiver==='Missing'))&&(p.n+p.e).toLowerCase().includes(state.pq.toLowerCase()));
+  return `<h1>People</h1><label class="search" style="flex-direction:row;font-weight:400"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="pq" aria-label="Search people" placeholder="Name, email or phone" value="${esc(state.pq)}"></label><div class="chips">${[['all','Everyone'],['bal','Balance due'],['wv','No waiver']].map(([k,l])=>`<button class="chip" data-pf="${k}" aria-pressed="${state.pf===k}">${l}</button>`).join('')}</div><div class="card">${L.map(p=>row(p)).join('')||'<div class="item sub">No matches.</div>'}</div>`}
+
+function vInbox(){const t=state.itab;
+  const b=t==='inq'?`<div class="card">${INQ.map(i=>`<div class="item" style="display:block;opacity:${i.done?.5:1}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(i.n)}</b><span class="sub">${i.when}</span></div><span class="pill neutral">${i.kind}</span><p style="margin:8px 0">${esc(i.msg)}</p><div class="row2"><button class="btn sm" data-reply="${i.id}">Reply</button><button class="btn sm" data-handled="${i.id}">${i.done?'Handled':'Mark handled'}</button></div></div>`).join('')}</div>`:
+  `<div class="card">${SENT.map(s=>`<div class="item" style="display:block"><div style="display:flex;justify-content:space-between;gap:8px"><b>${s[1]}</b><span class="pill good">${s[3]}</span></div><div class="sub">${esc(s[0])} · ${s[2]}</div></div>`).join('')}</div><div class="note info">Failed messages show here with a Retry button. Duplicate protection stays on.</div>`;
+  return `<h1>Inbox</h1><div class="chips">${[['inq','Inquiries'],['sent','Sent email']].map(([k,l])=>`<button class="chip sel" data-itab="${k}" aria-pressed="${t===k}">${l}</button>`).join('')}</div>`+b}
+
+function vMore(){return `<h1>More</h1><div class="card">${[['Courses & website','Price, photo, dates, visibility'],['Email templates','Edit the 16 messages'],['Locations','Henryville and RTSP defaults'],['Waiver','Current agreement and history'],['Certificates','History and failed deliveries'],['Account & team','Password, add an administrator']].map(([a,b])=>`<button class="item" data-mock="${a}"><span class="t"><b>${a}</b><span class="sub">${b}</span></span><span class="chev">›</span></button>`).join('')}</div><button class="btn" data-mock="Open the full website admin">Open full website admin</button>`}
+
+function render(){nav();$('#main').innerHTML=({today:vToday,classes:vClasses,people:vPeople,inbox:vInbox,more:vMore})[state.tab]();
+  const q=$('#pq');if(q)q.addEventListener('input',e=>{state.pq=e.target.value;const s=e.target.selectionStart;render();const n=$('#pq');n.focus();n.setSelectionRange(s,s)})}
+const close=()=>{$('#layer').innerHTML=''};
+function sheet(title,body,foot,full){$('#layer').innerHTML=`<div class="scrim" data-close></div><section class="sheet ${full?'full':''}" role="dialog" aria-label="${esc(title)}">${full?'':'<div class="grab"></div>'}<header><h2>${esc(title)}</h2><button class="btn sm" data-close style="min-height:36px">Close</button></header><div class="body">${body}</div>${foot?`<footer>${foot}</footer>`:''}</section>`}
+function confirmSend(title,to,what,fn){sheet(title,`<div class="note info">This sends to <b>${esc(to)}</b>:<br>${esc(what)}</div><p class="sub" style="margin:0">Demo mode: nothing is actually sent.</p>`,`<button class="btn" data-close>Cancel</button><button class="btn pri" id="go">Send</button>`);$('#go').onclick=()=>{fn();close();render()}}
+
+function person(id){const p=P.find(x=>x.id===id);state.pid=id;
+  const steps=`<div class="steps" aria-label="Progress"><i class="on"></i><i class="${p.st!=='submitted'?'on':''}"></i><i class="${due(p)===0?'on':''}"></i><i class="${p.st==='confirmed'?'on':''}"></i></div><div class="sub" style="display:flex;justify-content:space-between"><span>Applied</span><span>Approved</span><span>Paid</span><span>Confirmed</span></div>`;
+  let body=`<div style="display:flex;gap:12px;align-items:center"><span class="avatar" style="width:56px;height:56px;font-size:20px">${ini(p.n)}</span><div><b style="font-size:18px">${esc(p.n)}</b><div class="sub">${esc(p.course)} · ${p.date}</div></div></div>${steps}`;
+  if(p.st==='submitted')body+=`<div class="card"><dl class="kv" style="padding:14px"><dt>Waiver</dt><dd><span class="pill ${p.waiver==='Current'?'good':'warn'}">${p.waiver}</span> <span class="sub">${p.waiver==='Current'?'on file, valid 12 months':'approval email will include the waiver link'}</span></dd><dt>Selfie</dt><dd><span class="pill ${p.selfie?'good':'warn'}">${p.selfie?'On file':'Missing'}</span></dd><dt>Returning</dt><dd>${p.ret?'Yes, verified':'No'}</dd><dt>Payment</dt><dd>${$$(p.price)} · not started</dd></dl></div><div class="note info">Approving emails payment instructions. It does not mark them paid.</div>`;
+  else body+=`<div class="card"><dl class="kv" style="padding:14px"><dt>Waiver</dt><dd><span class="pill ${p.waiver==='Current'?'good':'warn'}">${p.waiver}</span>${p.wsent?` <span class="sub">sent ${p.wsent}</span>`:''}</dd><dt>Payment</dt><dd><b>${$$(p.paid)}</b> of ${$$(p.price)}${due(p)?` · <b style="color:var(--bad)">${$$(due(p))} left</b>`:''}</dd>${p.rep?`<dt>Reported</dt><dd>${$$(p.rep.a)} via ${p.rep.m}, ${p.rep.when}</dd>`:''}<dt>Last reminders</dt><dd>${p.remind.pay?'Payment '+p.remind.pay:'No payment reminder'}<br>${p.remind.waiver?'Waiver '+p.remind.waiver:'No waiver reminder'}</dd></dl></div>${p.st==='confirmed'?'<div class="note good">Fully paid with a current waiver. Course details were emailed.</div>':'<div class="note info">Course details email automatically once fully paid with a current waiver.</div>'}`;
+  body+=`<dl class="kv"><dt>Email</dt><dd>${esc(p.e)}</dd><dt>Phone</dt><dd>${p.ph}</dd></dl>`;
+  let foot='';
+  if(p.st==='submitted')foot=`<button class="btn pri" data-approve="${id}" style="flex:2 1 100%">Approve${p.waiver==='Current'?' (waiver on file)':' and send waiver'}</button><button class="btn" data-corr="${id}">Request corrections</button><button class="btn danger" data-rej="${id}">Reject</button>`;
+  else{
+    if(p.rep)foot+=`<button class="btn good" data-verify="${id}" style="flex:2 1 100%">Verify ${$$(p.rep.a)} ${p.rep.m}</button>`;
+    if(due(p)>0)foot+=`<button class="btn pri" data-pay="${id}">Record payment</button>`;
+    if(due(p)>0)foot+=`<button class="btn" data-rem="${id}:pay">${p.remind.pay?'Send payment reminder':'Send payment reminder'}</button>`;
+    if(p.waiver==='Missing')foot+=`<button class="btn" data-rem="${id}:waiver">${p.wsent?'Send waiver reminder':'Send waiver'}</button>`;
+    foot+=`<button class="btn" data-copyi="${id}">Copy payment instructions</button>`}
+  sheet('Registration',body,foot,true)}
+
+function paySheet(id){const p=P.find(x=>x.id===id),pay={m:'Zelle',mode:'full',amt:due(p)};
+  const draw=()=>{sheet('Record payment',`<div class="note info">${esc(p.n)} · ${$$(due(p))} remaining of ${$$(p.price)}</div>
+  <div><div class="sub" style="margin-bottom:8px">How much?</div><div class="seg"><button data-mode="full" aria-pressed="${pay.mode==='full'}">Paid in full ${$$(due(p))}</button><button data-mode="part" aria-pressed="${pay.mode==='part'}">Partial</button></div></div>
+  ${pay.mode==='part'?`<label>Amount received ($)<input id="amt" type="number" inputmode="decimal" value="${pay.amt===due(p)?'':pay.amt}" placeholder="e.g. 100"></label>`:''}
+  <div><div class="sub" style="margin-bottom:8px">Paid with</div><div class="chips" style="flex-wrap:wrap">${['Zelle','Cash App','Venmo','PayPal','Cash','Other'].map(m=>`<button class="chip sel" data-method="${m}" aria-pressed="${pay.m===m}">${m}</button>`).join('')}</div></div>
+  <label>Note (optional)<input id="pnote" placeholder="Reference or confirmation number"></label>
+  <div class="note ${pay.mode==='full'?'good':'warn'}">${pay.mode==='full'?'Marks this registration paid in full.':`Leaves ${$$(Math.max(due(p)-(+pay.amt||0),0))} still owed.`}</div>`,
+  `<button class="btn" data-close>Cancel</button><button class="btn good" id="rec">Record ${$$(pay.mode==='full'?due(p):(+pay.amt||0))}</button>`)};
+  draw();
+  const L=$('#layer');L.onclick=e=>{const t=e.target.closest('[data-mode],[data-method],#rec');if(!t)return;
+    if(t.dataset.mode){pay.mode=t.dataset.mode;pay.amt=pay.mode==='full'?due(p):'';draw()}
+    else if(t.dataset.method){const a=$('#amt');if(a)pay.amt=a.value;pay.m=t.dataset.method;draw()}
+    else if(t.id==='rec'){const a=$('#amt');const amt=pay.mode==='full'?due(p):+(a?a.value:0);if(!(amt>0)){toast('Enter an amount');return}
+      p.paid=Math.min(p.paid+amt,p.price);p.rep=null;SENT.unshift([p.e,due(p)?'Partial payment receipt':'Payment confirmed','Just now','Delivered']);
+      if(due(p)===0&&p.waiver==='Current'){p.st='confirmed';toast('Paid in full via '+pay.m+'. Course details emailed.')}else if(due(p)===0){toast('Paid in full. Waiver still needed before details go out.')}else toast('Recorded '+$$(amt)+' via '+pay.m+'. '+$$(due(p))+' left.');
+      L.onclick=null;close();render()}}}
+
+function corrSheet(id){const p=P.find(x=>x.id===id);sheet('Request corrections',`<div class="sub">Pick what the student needs to fix.</div><div class="checks">${['Legal first name','Legal last name','Preferred name','Email','Phone','Selfie','Experience notes'].map(f=>`<label><input type="checkbox"> ${f}</label>`).join('')}</div><label>Message<textarea rows="3" placeholder="What should they change?"></textarea></label>`,`<button class="btn" data-close>Cancel</button><button class="btn pri" id="go">Send request</button>`);$('#go').onclick=()=>{close();toast('Correction request sent (demo)')}}
+function rejSheet(id){const p=P.find(x=>x.id===id);sheet('Reject registration',`<div class="note warn">Rejecting ${esc(p.n)} cannot be undone from the app.</div><label>Reason<textarea rows="3"></textarea></label>`,`<button class="btn" data-close>Cancel</button><button class="btn danger" id="go">Reject</button>`);$('#go').onclick=()=>{close();toast('Rejected (demo)')}}
+function classSheet(){sheet('Add class date',`<label>Course<select><option>Low Light</option><option>Stress Box</option><option>NJ CCW Course</option><option>Advanced Tactical Pistol</option></select></label><div class="row2"><label style="flex:1">Date<input type="date"></label><label style="flex:1">Time<input type="time" value="10:00"></label></div><label>Location<select><option>Henryville, PA</option><option>RTSP</option></select></label><div class="row2"><label style="flex:1">Capacity<input type="number" inputmode="numeric" value="8"></label><label style="flex:1">Visibility<select><option>Public</option><option>Direct link only</option><option>Private</option></select></label></div>`,`<button class="btn" data-close>Cancel</button><button class="btn pri" data-mock="Saved as draft">Save as draft</button>`)}
+function replySheet(id){const i=INQ.find(x=>x.id===id);sheet('Reply to '+i.n,`<div class="note info">${esc(i.msg)}</div><label>Your reply<textarea rows="6">Hi ${esc(i.n.split(' ')[0])}, thanks for reaching out. </textarea></label>`,`<button class="btn" data-close>Cancel</button><button class="btn pri" id="go">Send reply</button>`);$('#go').onclick=()=>{i.done=true;close();toast('Reply sent and marked handled (demo)');render()}}
+
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab],[data-p],[data-cls],[data-clsback],[data-ctab],[data-itab],[data-pf],[data-cf],[data-att],[data-approve],[data-corr],[data-rej],[data-verify],[data-pay],[data-rem],[data-copyi],[data-close],[data-mock],[data-sheetclass],[data-reply],[data-handled],[data-genc],[data-sendc],[data-bulkwv],#theme');if(!t)return;const d=t.dataset;
+  if(t.id==='theme'){const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark';return}
+  if('close' in d){$('#layer').onclick=null;return close()}
+  if(d.tab){state.tab=d.tab;state.cls=null;close();return render()}
+  if(d.p){return person(+d.p)}
+  if(d.cls){state.tab='classes';state.cls=+d.cls;state.ctab='roster';return render()}
+  if('clsback' in d){state.cls=null;return render()}
+  if(d.ctab){state.ctab=d.ctab;return render()} if(d.itab){state.itab=d.itab;return render()} if(d.pf){state.pf=d.pf;return render()}
+  if(d.att){const[i,v]=d.att.split(':'),p=P.find(x=>x.id==i);p.att=p.att===v?null:v;return render()}
+  if(d.approve){const p=P.find(x=>x.id==d.approve);p.st='approved';SENT.unshift([p.e,'Registration approved','Just now','Delivered']);close();render();return toast(p.waiver==='Current'?'Approved. Payment instructions emailed.':'Approved. Payment instructions and waiver link emailed.')}
+  if(d.corr)return corrSheet(+d.corr); if(d.rej)return rejSheet(+d.rej);
+  if(d.verify){const p=P.find(x=>x.id==d.verify);p.paid=Math.min(p.paid+p.rep.a,p.price);const m=p.rep.m;p.rep=null;if(due(p)===0&&p.waiver==='Current')p.st='confirmed';SENT.unshift([p.e,'Payment confirmed','Just now','Delivered']);close();render();return toast('Verified via '+m+'. '+(p.st==='confirmed'?'Course details emailed.':due(p)?$$(due(p))+' left.':'Waiver still needed.'))}
+  if(d.pay)return paySheet(+d.pay);
+  if(d.rem){const[i,k]=d.rem.split(':'),p=P.find(x=>x.id==i);return confirmSend(k==='pay'?'Payment reminder':(p.wsent?'Waiver reminder':'Send waiver'),p.e,k==='pay'?`Reminder for ${$$(due(p))} remaining, with payment instructions.`:'Link to sign the current participant agreement.',()=>{if(k==='pay')p.remind.pay='Today';else{p.remind.waiver='Today';p.wsent=p.wsent||'Today'}SENT.unshift([p.e,k==='pay'?'Payment reminder':'Waiver reminder','Just now','Delivered']);toast('Sent to '+p.e);person(p.id)})}
+  if(d.copyi){const p=P.find(x=>x.id==d.copyi),txt=`Remaining balance: ${$$(due(p))}. Send through Zelle to 424-610-6171.`;try{navigator.clipboard.writeText(txt).then(()=>toast('Payment instructions copied'),()=>toast('Copy not available here'))}catch(_){toast('Copy not available here')}return}
+  if('sheetclass' in d)return classSheet();
+  if(d.reply)return replySheet(+d.reply);
+  if(d.handled){const i=INQ.find(x=>x.id==d.handled);i.done=!i.done;return render()}
+  if('genc' in d){state.gen=true;toast('PDFs generated (demo). Nothing emailed yet.');return render()}
+  if('sendc' in d){state.sentc=true;toast('Certificates emailed (demo)');return render()}
+  if(d.bulkwv){const n=P.filter(p=>p.waiver==='Missing').length;return confirmSend('Waiver reminders',n+' people','Reminder to sign the current participant agreement.',()=>toast('Reminders sent (demo)'))}
+  if(d.mock){close();toast(d.mock+' (demo only)')}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.done){const p=P.find(x=>x.id==t.dataset.done);p.done=t.checked;render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+render();
+
+if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+
+</body>
+</html>
